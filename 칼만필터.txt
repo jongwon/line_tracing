@@ -1,0 +1,30 @@
+# 칼만 필터 함수
+def kalman_filter(data, Q=0.01, R=1):
+    x_est = data[0]  # 초기 추정
+    P = 1.0          # 초기 오차
+    x_estimates = [x_est]
+    
+    for z in data[1:]:
+        x_pred = x_est
+        P_pred = P + Q
+
+        K = P_pred / (P_pred + R)
+        x_est = x_pred + K * (z - x_pred)
+        P = (1 - K) * P_pred
+
+        x_estimates.append(x_est)
+        
+    return np.array(x_estimates)
+
+kalman_filtered = kalman_filter(sensor_data)
+
+# 시각화
+plt.plot(sensor_data, label='원본 데이터', linestyle='--', marker='o', alpha=0.6)
+plt.plot(kalman_filtered, label='칼만 필터', linewidth=2)
+plt.plot(true_data, label='실제값 (기준)', linewidth=2)
+plt.title('칼만 필터 결과')
+plt.xlabel('시간')
+plt.ylabel('센서값')
+plt.grid(True)
+plt.legend()
+plt.show()
